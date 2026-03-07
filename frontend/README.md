@@ -1,5 +1,31 @@
 # Frontend (React + Tailwind)
 
+Simple UI for CloudTools Expiration Tracker.
+
+## Run locally
+
+```bash
+npm install
+npm run dev
+```
+
+Optional config:
+
+```bash
+cp .env.example .env
+```
+
+If `.env` is not set, API URL defaults to `http://localhost:8000`.
+
+## Current UX behavior
+
+- Fixed dropdown for item types (tool/company agnostic values)
+- 14-day reminder notification section
+- Color-coded status in table (expired, reminder, upcoming, healthy)
+- Soft delete and restore actions
+- Basic item history viewer per row
+# Frontend (React + Tailwind)
+
 This UI is a simple dashboard for tracking expiration metadata.
 
 ## Run

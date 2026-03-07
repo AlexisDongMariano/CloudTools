@@ -1,8 +1,14 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
 async function request(path, options = {}) {
+  const headers = { ...(options.headers || {}) };
+
+  if (options.body && !headers["Content-Type"]) {
+    headers["Content-Type"] = "application/json";
+  }
+
   const response = await fetch(`${API_BASE_URL}${path}`, {
-    headers: { "Content-Type": "application/json" },
+    headers,
     ...options,
   });
 
@@ -18,8 +24,9 @@ async function request(path, options = {}) {
   return response.json();
 }
 
-export function getItems() {
-  return request("/api/items");
+export function getItems(includeDeleted = false) {
+  const query = includeDeleted ? "?include_deleted=true" : "";
+  return request(`/api/items${query}`);
 }
 
 export function getSummary() {
@@ -44,4 +51,14 @@ export function deleteItem(itemId) {
   return request(`/api/items/${itemId}`, {
     method: "DELETE",
   });
+}
+
+export function restoreItem(itemId) {
+  return request(`/api/items/${itemId}/restore`, {
+    method: "POST",
+  });
+}
+
+export function getItemHistory(itemId) {
+  return request(`/api/items/${itemId}/history`);
 }

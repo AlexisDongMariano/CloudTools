@@ -13,3 +13,6 @@ frontend/dist/
 backend/.env
 
 .DS_Store
+
+# Private local learning notes (do not push)
+docs/private-learning-guide.md

@@ -30,14 +30,17 @@ cloudtools/
 - `identifier` (optional, example: thumbprint, key id)
 - `source`
 - `owner`
+- `owner_email` (optional, person email or group email)
 - `ticket` (optional)
 - `environment` (optional)
 - `date_created`
 - `date_expiration`
 - `notes` (optional)
 - `is_active`
+- `deleted_at` (for soft delete)
 
 Field naming and type suggestions are documented in `docs/tracked-item-fields.md`.
+Hosting instructions are documented in `docs/hosting-options.md`.
 
 ## Quick start (local)
 
@@ -72,3 +75,4 @@ Open `http://localhost:5173`.
 
 - This project intentionally avoids advanced architecture so it stays beginner-friendly.
 - CI/CD templates are included as planning artifacts only (not production-ready yet).
+- Deleting an item is a soft-delete (history is preserved).

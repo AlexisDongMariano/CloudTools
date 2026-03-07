@@ -7,6 +7,7 @@ For naming clarity, use:
 - `identifier` (optional, for thumbprint/key-id/etc.)
 - `source`
 - `owner`
+- `owner_email` (optional)
 - `ticket` (optional)
 - `date_created`
 - `date_expiration`
@@ -15,6 +16,7 @@ Optional but useful:
 
 - `environment` (prod/staging/dev)
 - `is_active`
+- `deleted_at` (soft-delete support)
 - `notes`
 
 ## Suggested item types to track
@@ -28,3 +30,10 @@ Optional but useful:
 - `license_renewal`
 - `ssh_key`
 - `saml_signing_certificate`
+
+## Reminder setting
+
+- Current default reminder window: **14 days before expiration**
+- UI includes:
+  - color-coded status in table
+  - dedicated reminder notification section

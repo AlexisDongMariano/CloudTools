@@ -6,6 +6,7 @@ const defaultFormValues = {
   identifier: "",
   source: "",
   owner: "",
+  owner_email: "",
   ticket: "",
   environment: "production",
   date_created: "",
@@ -14,7 +15,7 @@ const defaultFormValues = {
   is_active: true,
 };
 
-const suggestedTypes = [
+const itemTypes = [
   "tls_certificate",
   "api_key",
   "oauth_client_secret",
@@ -22,6 +23,8 @@ const suggestedTypes = [
   "iam_access_key",
   "domain_registration",
   "license_renewal",
+  "ssh_key",
+  "saml_signing_certificate",
 ];
 
 function buildFormValues(editingItem) {
@@ -33,6 +36,7 @@ function buildFormValues(editingItem) {
     ...defaultFormValues,
     ...editingItem,
     identifier: editingItem.identifier || "",
+    owner_email: editingItem.owner_email || "",
     ticket: editingItem.ticket || "",
     environment: editingItem.environment || "",
     notes: editingItem.notes || "",
@@ -56,6 +60,7 @@ export default function ItemForm({ editingItem, onSave, onCancelEdit, saving }) 
     const payload = {
       ...formValues,
       identifier: formValues.identifier || null,
+      owner_email: formValues.owner_email || null,
       ticket: formValues.ticket || null,
       environment: formValues.environment || null,
       notes: formValues.notes || null,
@@ -74,14 +79,19 @@ export default function ItemForm({ editingItem, onSave, onCancelEdit, saving }) 
       <form className="mt-4 grid gap-4 md:grid-cols-2" onSubmit={handleSubmit}>
         <label className="block">
           <span className="text-sm font-medium">Type</span>
-          <input
+          <select
             className="mt-1 w-full rounded-md border px-3 py-2"
-            list="item-types"
             name="item_type"
             value={formValues.item_type}
             onChange={handleChange}
             required
-          />
+          >
+            {itemTypes.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
         </label>
 
         <label className="block">
@@ -126,6 +136,17 @@ export default function ItemForm({ editingItem, onSave, onCancelEdit, saving }) 
             value={formValues.owner}
             onChange={handleChange}
             required
+          />
+        </label>
+
+        <label className="block">
+          <span className="text-sm font-medium">Owner Email / Group Email (optional)</span>
+          <input
+            className="mt-1 w-full rounded-md border px-3 py-2"
+            name="owner_email"
+            placeholder="team-cloudops@company.com"
+            value={formValues.owner_email}
+            onChange={handleChange}
           />
         </label>
 
@@ -217,11 +238,6 @@ export default function ItemForm({ editingItem, onSave, onCancelEdit, saving }) 
         </div>
       </form>
 
-      <datalist id="item-types">
-        {suggestedTypes.map((type) => (
-          <option key={type} value={type} />
-        ))}
-      </datalist>
     </section>
   );
 }
