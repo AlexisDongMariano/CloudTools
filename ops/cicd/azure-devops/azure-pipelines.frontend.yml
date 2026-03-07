@@ -1,0 +1,20 @@
+trigger:
+  - main
+
+pool:
+  vmImage: "ubuntu-latest"
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "18.x"
+    displayName: "Use Node.js"
+
+  - script: |
+      cd frontend
+      npm ci
+      npm run build
+    displayName: "Build frontend"
+
+  # TODO: Add lint/test gates.
+  # TODO: Add deployment stages for Azure Web App or Static Web App.

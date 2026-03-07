@@ -1,0 +1,22 @@
+trigger:
+  - main
+
+pool:
+  vmImage: "ubuntu-latest"
+
+steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: "3.11"
+
+  - script: |
+      python -m pip install --upgrade pip
+      pip install -r backend/requirements.txt
+    displayName: "Install backend dependencies"
+
+  - script: |
+      python -m compileall backend/app
+    displayName: "Basic backend validation"
+
+  # TODO: Add test execution once tests are added.
+  # TODO: Add artifact publish/deploy stage.
