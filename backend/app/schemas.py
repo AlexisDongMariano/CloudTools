@@ -9,6 +9,7 @@ class TrackedItemBase(BaseModel):
     identifier: str | None = Field(default=None, max_length=120)
     source: str = Field(min_length=2, max_length=120)
     owner: str = Field(min_length=2, max_length=120)
+    owner_email: str | None = Field(default=None, max_length=200)
     ticket: str | None = Field(default=None, max_length=120)
     environment: str | None = Field(default=None, max_length=30)
     date_created: date
@@ -35,6 +36,7 @@ class TrackedItemUpdate(BaseModel):
     identifier: str | None = Field(default=None, max_length=120)
     source: str | None = Field(default=None, min_length=2, max_length=120)
     owner: str | None = Field(default=None, min_length=2, max_length=120)
+    owner_email: str | None = Field(default=None, max_length=200)
     ticket: str | None = Field(default=None, max_length=120)
     environment: str | None = Field(default=None, max_length=30)
     date_created: date | None = None
@@ -53,6 +55,7 @@ class TrackedItemUpdate(BaseModel):
 
 class TrackedItemRead(TrackedItemBase):
     id: int
+    deleted_at: datetime | None
     created_at: datetime
     updated_at: datetime
 
@@ -62,5 +65,16 @@ class TrackedItemRead(TrackedItemBase):
 class ItemSummary(BaseModel):
     total_items: int
     expired_items: int
+    expiring_in_14_days: int
     expiring_in_30_days: int
     expiring_in_7_days: int
+
+
+class TrackedItemHistoryRead(BaseModel):
+    id: int
+    item_id: int
+    action: str
+    snapshot: str
+    changed_at: datetime
+
+    model_config = {"from_attributes": True}

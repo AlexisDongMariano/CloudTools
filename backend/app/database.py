@@ -6,7 +6,8 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 class Settings(BaseSettings):
     app_name: str = "CloudTools API"
     database_url: str = "postgresql+psycopg://postgres:postgres@localhost:5432/cloudtools"
-    cors_origins: str = "http://localhost:5173"
+    cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
+    cors_origin_regex: str | None = r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$"
     database_echo: bool = False
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
