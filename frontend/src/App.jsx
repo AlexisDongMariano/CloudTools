@@ -11,6 +11,8 @@ import {
 } from "./api";
 import ItemForm from "./components/ItemForm";
 import ItemTable from "./components/ItemTable";
+import KnowledgeArticlesPage from "./components/KnowledgeArticlesPage";
+import Navbar from "./components/Navbar";
 import SummaryCards from "./components/SummaryCards";
 
 function getDaysLeft(dateExpiration) {
@@ -22,6 +24,8 @@ function getDaysLeft(dateExpiration) {
 }
 
 export default function App() {
+  const [activePage, setActivePage] = useState("expiration");
+  const [formVersion, setFormVersion] = useState(0);
   const [items, setItems] = useState([]);
   const [summary, setSummary] = useState({
     total_items: 0,
@@ -70,6 +74,7 @@ export default function App() {
       }
 
       setEditingItem(null);
+      setFormVersion((prev) => prev + 1);
       await loadData();
     } catch (saveError) {
       setError(`Failed to save item: ${saveError.message}`);
@@ -144,74 +149,85 @@ export default function App() {
     .sort((a, b) => a.date_expiration.localeCompare(b.date_expiration));
 
   return (
-    <main className="min-h-screen bg-slate-100 px-4 py-8 text-slate-900">
-      <div className="mx-auto flex max-w-7xl flex-col gap-6">
-        <header>
-          <h1 className="text-3xl font-bold">CloudTools</h1>
-          <p className="mt-2 text-slate-700">
-            Expiration Tracker for certificates, API keys, and other time-limited cloud items.
-          </p>
-        </header>
+    <div className="min-h-screen bg-slate-100 text-slate-900">
+      <Navbar activePage={activePage} onPageChange={setActivePage} />
+      <main className="px-4 py-8">
+        <div className="mx-auto flex max-w-7xl flex-col gap-6">
+          {activePage === "expiration" ? (
+            <>
+              <header>
+                <h1 className="text-2xl font-bold">Expiration Tracker Dashboard</h1>
+                <p className="mt-1 text-slate-700">
+                  Track expiration dates for certificates, API keys, and other time-limited items.
+                </p>
+              </header>
 
-        {message && (
-          <div className="rounded-md border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
-            {message}
-          </div>
-        )}
+              {message && (
+                <div className="rounded-md border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+                  {message}
+                </div>
+              )}
 
-        {error && (
-          <div className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
-            {error}
-          </div>
-        )}
+              {error && (
+                <div className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+                  {error}
+                </div>
+              )}
 
-        <SummaryCards summary={summary} />
+              <SummaryCards summary={summary} />
 
-        <section className="rounded-xl border border-orange-200 bg-orange-50 p-4">
-          <h2 className="text-lg font-semibold text-orange-900">14-Day Reminder Notifications</h2>
-          {reminderItems.length === 0 ? (
-            <p className="mt-1 text-sm text-orange-800">No items are currently in the 14-day window.</p>
+              <section className="rounded-xl border border-orange-200 bg-orange-50 p-4">
+                <h2 className="text-lg font-semibold text-orange-900">14-Day Reminder Notifications</h2>
+                {reminderItems.length === 0 ? (
+                  <p className="mt-1 text-sm text-orange-800">
+                    No items are currently in the 14-day window.
+                  </p>
+                ) : (
+                  <ul className="mt-2 space-y-1 text-sm text-orange-900">
+                    {reminderItems.map((item) => (
+                      <li key={item.id}>
+                        {item.item_type} - <strong>{item.name}</strong> expires on {item.date_expiration}
+                        {item.owner_email ? ` (notify: ${item.owner_email})` : ""}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </section>
+
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={showDeleted}
+                  onChange={(event) => setShowDeleted(event.target.checked)}
+                />
+                Show soft-deleted items
+              </label>
+
+              <ItemForm
+                key={`${editingItem ? `edit-${editingItem.id}` : "new"}-${formVersion}`}
+                editingItem={editingItem}
+                onSave={handleSave}
+                onCancelEdit={() => setEditingItem(null)}
+                saving={saving}
+              />
+
+              <ItemTable
+                items={items}
+                onEdit={(item) => setEditingItem(item)}
+                onDelete={handleDelete}
+                onRestore={handleRestore}
+                onViewHistory={handleViewHistory}
+                deletingId={deletingId}
+                restoringId={restoringId}
+                loadingHistoryId={loadingHistoryId}
+                historyByItem={historyByItem}
+              />
+            </>
           ) : (
-            <ul className="mt-2 space-y-1 text-sm text-orange-900">
-              {reminderItems.map((item) => (
-                <li key={item.id}>
-                  {item.item_type} - <strong>{item.name}</strong> expires on {item.date_expiration}
-                  {item.owner_email ? ` (notify: ${item.owner_email})` : ""}
-                </li>
-              ))}
-            </ul>
+            <KnowledgeArticlesPage />
           )}
-        </section>
-
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={showDeleted}
-            onChange={(event) => setShowDeleted(event.target.checked)}
-          />
-          Show soft-deleted items
-        </label>
-
-        <ItemForm
-          key={editingItem ? `edit-${editingItem.id}` : "new"}
-          editingItem={editingItem}
-          onSave={handleSave}
-          onCancelEdit={() => setEditingItem(null)}
-          saving={saving}
-        />
-
-        <ItemTable
-          items={items}
-          onEdit={(item) => setEditingItem(item)}
-          onDelete={handleDelete}
-          onRestore={handleRestore}
-          onViewHistory={handleViewHistory}
-          deletingId={deletingId}
-          restoringId={restoringId}
-          loadingHistoryId={loadingHistoryId}
-          historyByItem={historyByItem}
-        />
-      </div>
-    </main>
+        </div>
+      </main>
+    </div>
   );
 }
